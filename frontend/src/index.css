@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+@keyframes grid-playhead-pulse {
+  0%,
+  100% {
+    opacity: 0.95;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.grid-playhead {
+  animation: grid-playhead-pulse 0.5s ease-in-out infinite;
+}

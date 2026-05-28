@@ -55,6 +55,19 @@ function Grid() {
           />
         ))}
       </div>
+
+      {/* Playhead */}
+      <div
+        className="grid-playhead absolute w-0.5 bg-white/80 pointer-events-none"
+        style={{
+          top: "-6%",
+          bottom: "-6%",
+          left: "0%",
+          transform: "translateX(-50%)",
+          boxShadow:
+            "0 0 8px rgba(255, 255, 255, 0.5), 0 0 22px rgba(180, 180, 255, 0.2)",
+        }}
+      />
     </div>
   );
 }
