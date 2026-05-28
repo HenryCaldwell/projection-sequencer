@@ -1,4 +1,5 @@
 import CrtEffect from "./components/sequencer/CrtEffect";
+import Grid from "./components/sequencer/Grid";
 
 function App() {
   return (
@@ -6,6 +7,7 @@ function App() {
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         <div className="flex-1 relative flex items-center justify-center overflow-hidden">
           <CrtEffect />
+          <Grid />
         </div>
 
         <div className="h-56 shrink-0 flex flex-row overflow-x-auto overflow-y-hidden border-t border-white/5" />
