@@ -1,7 +1,13 @@
+import { useState } from "react";
 import CrtEffect from "./components/sequencer/CrtEffect";
 import Grid from "./components/sequencer/Grid";
+import Transport from "./components/sidebar/Transport";
 
 function App() {
+  const [playing, setPlaying] = useState(false);
+  const bpm = 120;
+  const currentBeat = 1;
+
   return (
     <div className="w-screen h-screen flex flex-row overflow-hidden bg-neutral-950">
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
@@ -13,7 +19,14 @@ function App() {
         <div className="h-56 shrink-0 flex flex-row overflow-x-auto overflow-y-hidden border-t border-white/5" />
       </div>
 
-      <div className="w-52 shrink-0 flex flex-col overflow-hidden border-l border-white/5" />
+      <div className="w-52 shrink-0 flex flex-col overflow-hidden border-l border-white/5">
+        <Transport
+          playing={playing}
+          onPlayingChange={setPlaying}
+          bpm={bpm}
+          currentBeat={currentBeat}
+        />
+      </div>
     </div>
   );
 }

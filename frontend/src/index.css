@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+body {
+  font-family: "Courier New", Courier, monospace;
+
+  background-color: black;
+}
+
 @keyframes grid-playhead-pulse {
   0%,
   100% {
