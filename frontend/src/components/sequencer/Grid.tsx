@@ -1,6 +1,11 @@
+import type { RefObject } from "react";
 import { NUM_BEATS, NUM_LANES } from "../../lib/constants";
 
-function Grid() {
+type Props = {
+  playheadRef: RefObject<HTMLDivElement | null>;
+};
+
+function Grid({ playheadRef }: Props) {
   return (
     <div
       className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
@@ -58,6 +63,7 @@ function Grid() {
 
       {/* Playhead */}
       <div
+        ref={playheadRef}
         className="grid-playhead absolute w-0.5 bg-white/80 pointer-events-none"
         style={{
           top: "-6%",
