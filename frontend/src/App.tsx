@@ -1,11 +1,17 @@
 import { useState } from "react";
 import CrtEffect from "./components/sequencer/CrtEffect";
 import Grid from "./components/sequencer/Grid";
+import FaderBank from "./components/sidebar/FaderBank";
 import Transport from "./components/sidebar/Transport";
 
 function App() {
   const [playing, setPlaying] = useState(false);
-  const bpm = 120;
+  const [bpm, setBpm] = useState(120);
+  const [masterVolume, setMasterVolume] = useState(0.8);
+  const [laneVolumes, setLaneVolumes] = useState<number[]>([
+    0.8, 0.8, 0.8, 0.8,
+  ]);
+
   const currentBeat = 1;
 
   return (
@@ -25,6 +31,14 @@ function App() {
           onPlayingChange={setPlaying}
           bpm={bpm}
           currentBeat={currentBeat}
+        />
+        <FaderBank
+          bpm={bpm}
+          onBpmChange={setBpm}
+          masterVolume={masterVolume}
+          onMasterVolumeChange={setMasterVolume}
+          laneVolumes={laneVolumes}
+          onLaneVolumesChange={setLaneVolumes}
         />
       </div>
     </div>
