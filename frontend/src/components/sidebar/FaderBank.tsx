@@ -18,6 +18,10 @@ function FaderBank({
   laneVolumes,
   onLaneVolumesChange,
 }: Props) {
+  const handleLaneVolumeChange = (index: number, value: number) => {
+    onLaneVolumesChange(laneVolumes.with(index, value * 0.01));
+  };
+
   return (
     <div className="flex-1 flex flex-col px-2.5 pt-3.5 pb-3.5 min-h-0">
       <div className="text-xs text-neutral-700 tracking-widest mb-2.5 pl-1">
@@ -47,13 +51,7 @@ function FaderBank({
             min={0}
             max={100}
             step={1}
-            onValueChange={(value) =>
-              onLaneVolumesChange(
-                laneVolumes.map((volume, j) =>
-                  j === i ? value * 0.01 : volume,
-                ),
-              )
-            }
+            onValueChange={(value) => handleLaneVolumeChange(i, value)}
             label={name}
           />
         ))}
