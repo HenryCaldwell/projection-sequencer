@@ -4,7 +4,8 @@ import Grid from "./components/sequencer/Grid";
 import FaderBank from "./components/sidebar/FaderBank";
 import Transport from "./components/sidebar/Transport";
 import Toolbar from "./components/toolbar/Toolbar";
-import { NUM_BEATS } from "./lib/constants";
+import { DEFAULT_COLORS, NUM_BEATS } from "./lib/constants";
+import type { Color } from "./lib/types";
 
 function App() {
   // References
@@ -20,6 +21,8 @@ function App() {
   const [laneVolumes, setLaneVolumes] = useState<number[]>([
     0.8, 0.8, 0.8, 0.8,
   ]);
+
+  const [colors, setColors] = useState<Color[]>(DEFAULT_COLORS);
 
   // Effects
   useEffect(() => {
@@ -73,7 +76,7 @@ function App() {
           <Grid playheadRef={playheadRef} />
         </div>
 
-        <Toolbar />
+        <Toolbar colors={colors} onColorsChange={setColors} />
       </div>
 
       <div className="w-52 shrink-0 flex flex-col overflow-hidden border-l border-white/5">
