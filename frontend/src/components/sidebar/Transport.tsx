@@ -14,7 +14,7 @@ function Transport({ playing, onPlayingChange, bpm, currentBeat }: Props) {
       {/* Play */}
       <button
         onClick={() => onPlayingChange(!playing)}
-        className={`w-full h-9 flex items-center justify-center rounded-md py-2 mb-4 border transition-colors duration-150 ${
+        className={`w-full h-9 flex items-center justify-center rounded-md py-2 mb-4 border cursor-pointer transition-colors duration-150 ${
           playing
             ? "bg-green-400/10 border-green-400/20 text-green-400"
             : "bg-white/5 border-white/5 text-neutral-500 hover:bg-white/10"
