@@ -3,6 +3,7 @@ import CrtEffect from "./components/sequencer/CrtEffect";
 import Grid from "./components/sequencer/Grid";
 import FaderBank from "./components/sidebar/FaderBank";
 import Transport from "./components/sidebar/Transport";
+import Toolbar from "./components/toolbar/Toolbar";
 import { NUM_BEATS } from "./lib/constants";
 
 function App() {
@@ -72,7 +73,7 @@ function App() {
           <Grid playheadRef={playheadRef} />
         </div>
 
-        <div className="h-56 shrink-0 flex flex-row overflow-x-auto overflow-y-hidden border-t border-white/5" />
+        <Toolbar />
       </div>
 
       <div className="w-52 shrink-0 flex flex-col overflow-hidden border-l border-white/5">
