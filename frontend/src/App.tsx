@@ -8,12 +8,30 @@ import Toolbar from "./components/toolbar/Toolbar";
 import { DEFAULT_COLORS, DEMO_MARKERS, NUM_BEATS } from "./lib/constants";
 import type { Color, Marker } from "./lib/types";
 
+type AudioGraph = {
+  synths: {
+    kick: Tone.MembraneSynth;
+    snare: Tone.NoiseSynth;
+    hihat: Tone.NoiseSynth;
+    bass: Tone.FMSynth;
+  };
+  gains: {
+    kick: Tone.Gain;
+    snare: Tone.Gain;
+    hihat: Tone.Gain;
+    bass: Tone.Gain;
+  };
+  master: Tone.Gain;
+};
+
 function App() {
   // References
   const playheadRef = useRef<HTMLDivElement>(null);
 
   const lastBeatRef = useRef(0);
   const stopPendingRef = useRef(false);
+
+  const audioRef = useRef<AudioGraph | null>(null);
 
   // States
   const [playing, setPlaying] = useState(false);
@@ -51,6 +69,34 @@ function App() {
   };
 
   // Effects
+  // Audio graph
+  useEffect(() => {
+    const master = new Tone.Gain(0.8).toDestination();
+
+    const gains = {
+      kick: new Tone.Gain(0.8).connect(master),
+      snare: new Tone.Gain(0.8).connect(master),
+      hihat: new Tone.Gain(0.8).connect(master),
+      bass: new Tone.Gain(0.8).connect(master),
+    };
+
+    const synths = {
+      kick: new Tone.MembraneSynth().connect(gains.kick),
+      snare: new Tone.NoiseSynth().connect(gains.snare),
+      hihat: new Tone.NoiseSynth().connect(gains.hihat),
+      bass: new Tone.FMSynth().connect(gains.bass),
+    };
+
+    audioRef.current = { synths, gains, master };
+
+    return () => {
+      Object.values(synths).forEach((synth) => synth.dispose());
+      Object.values(gains).forEach((gain) => gain.dispose());
+      master.dispose();
+      audioRef.current = null;
+    };
+  }, []);
+
   // Transport config
   useEffect(() => {
     const transport = Tone.getTransport();
