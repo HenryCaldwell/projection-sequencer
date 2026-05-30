@@ -11,9 +11,11 @@ function App() {
   // References
   const playheadRef = useRef<HTMLDivElement>(null);
   const lastBeatRef = useRef(1);
+  const stopPendingRef = useRef(false);
 
   // States
   const [playing, setPlaying] = useState(false);
+  const [stopPending, setStopPending] = useState(false);
   const [bpm, setBpm] = useState(120);
   const [currentBeat, setCurrentBeat] = useState(1);
 
@@ -23,6 +25,24 @@ function App() {
   ]);
 
   const [colors, setColors] = useState<Color[]>(DEFAULT_COLORS);
+
+  // Handlers
+  const handlePlay = () => {
+    setPlaying(true);
+    setStopPending(false);
+    stopPendingRef.current = false;
+  };
+
+  const handleStop = () => {
+    if (stopPending) {
+      setPlaying(false);
+      setStopPending(false);
+      stopPendingRef.current = false;
+    } else {
+      setStopPending(true);
+      stopPendingRef.current = true;
+    }
+  };
 
   // Effects
   useEffect(() => {
@@ -44,8 +64,15 @@ function App() {
       const beat = Math.floor(position * NUM_BEATS) + 1;
 
       if (beat !== lastBeatRef.current) {
+        const wrapped = lastBeatRef.current > 1 && beat === 1;
         lastBeatRef.current = beat;
         setCurrentBeat(beat);
+
+        if (stopPendingRef.current && wrapped) {
+          setPlaying(false);
+          setStopPending(false);
+          stopPendingRef.current = false;
+        }
       }
 
       if (playheadRef.current) {
@@ -82,7 +109,9 @@ function App() {
       <div className="w-52 shrink-0 flex flex-col overflow-hidden border-l border-white/5">
         <Transport
           playing={playing}
-          onPlayingChange={setPlaying}
+          stopPending={stopPending}
+          onPlay={handlePlay}
+          onStop={handleStop}
           bpm={bpm}
           currentBeat={currentBeat}
         />
