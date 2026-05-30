@@ -98,3 +98,24 @@ body {
   border-radius: 50%;
   background: #686868;
 }
+
+.react-colorful {
+  width: 160px !important;
+  height: 160px !important;
+}
+
+.react-colorful__pointer {
+  width: 11px !important;
+  height: 11px !important;
+
+  border-width: 1.5px !important;
+}
+
+.react-colorful__saturation {
+  border-bottom: none !important;
+  border-radius: 4px !important;
+}
+
+.react-colorful__last-control {
+  border-radius: 4px !important;
+}

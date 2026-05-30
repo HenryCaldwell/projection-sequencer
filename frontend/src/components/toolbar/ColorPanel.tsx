@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { HexColorPicker } from "react-colorful";
 import type { Color } from "../../lib/types";
 import HexInput from "./HexInput";
 
@@ -77,9 +78,22 @@ function ColorPanel({ colors, onColorsChange }: Props) {
       <div className="w-px bg-white/5 self-stretch shrink-0" />
 
       <div className="flex flex-col items-center gap-2 shrink-0">
-        <HexInput
-          hex={active.hex}
-          onHexChange={(hex) => handleColorChange(active.id, { hex })}
+        <div className="flex items-center gap-2">
+          <div
+            className="w-5 h-5 rounded-sm shrink-0 border border-white/30"
+            style={{
+              background: active.hex,
+              boxShadow: `0 0 8px ${active.hex}44`,
+            }}
+          />
+          <HexInput
+            hex={active.hex}
+            onHexChange={(hex) => handleColorChange(active.id, { hex })}
+          />
+        </div>
+        <HexColorPicker
+          color={active.hex}
+          onChange={(hex) => handleColorChange(active.id, { hex })}
         />
       </div>
     </div>
