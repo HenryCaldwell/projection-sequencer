@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import * as Tone from "tone";
 import CrtEffect from "./components/sequencer/CrtEffect";
 import Grid from "./components/sequencer/Grid";
 import FaderBank from "./components/sidebar/FaderBank";
@@ -11,10 +12,7 @@ function App() {
   // References
   const playheadRef = useRef<HTMLDivElement>(null);
 
-  const startRef = useRef<number | null>(null);
-  const bpmRef = useRef(120);
   const lastBeatRef = useRef(0);
-
   const stopPendingRef = useRef(false);
 
   // States
@@ -33,6 +31,8 @@ function App() {
 
   // Handlers
   const handlePlay = () => {
+    Tone.start();
+    Tone.getTransport().start();
     setPlaying(true);
     setStopPending(false);
     stopPendingRef.current = false;
@@ -40,6 +40,7 @@ function App() {
 
   const handleStop = () => {
     if (stopPending) {
+      Tone.getTransport().stop();
       setPlaying(false);
       setStopPending(false);
       stopPendingRef.current = false;
@@ -50,6 +51,45 @@ function App() {
   };
 
   // Effects
+  // Transport config
+  useEffect(() => {
+    const transport = Tone.getTransport();
+    transport.loop = true;
+    transport.loopStart = 0;
+    transport.loopEnd = "4m";
+
+    Tone.getContext().lookAhead = 0.01;
+  }, []);
+
+  // BPM sync
+  useEffect(() => {
+    Tone.getTransport().bpm.value = bpm;
+  }, [bpm]);
+
+  // Engine
+  useEffect(() => {
+    const transport = Tone.getTransport();
+
+    const id = transport.scheduleRepeat(() => {
+      const next = (lastBeatRef.current % NUM_BEATS) + 1;
+      const wrapped = lastBeatRef.current > 1 && next === 1;
+      lastBeatRef.current = next;
+      setCurrentBeat(next);
+
+      if (stopPendingRef.current && wrapped) {
+        transport.stop();
+        setPlaying(false);
+        setStopPending(false);
+        stopPendingRef.current = false;
+      }
+    }, "4n");
+
+    return () => {
+      transport.clear(id);
+    };
+  }, []);
+
+  // Playhead
   useEffect(() => {
     if (!playing) {
       return;
@@ -57,30 +97,10 @@ function App() {
 
     let rafId: number;
 
-    const tick = (now: number) => {
-      if (startRef.current === null) {
-        startRef.current = now;
-      }
-
-      const elapsed = (now - startRef.current) / 1000;
-      const loop = (60 / bpmRef.current) * NUM_BEATS;
-      const position = (elapsed % loop) / loop;
-      const beat = Math.floor(position * NUM_BEATS) + 1;
-
-      if (beat !== lastBeatRef.current) {
-        const wrapped = lastBeatRef.current > 1 && beat === 1;
-        lastBeatRef.current = beat;
-        setCurrentBeat(beat);
-
-        if (stopPendingRef.current && wrapped) {
-          setPlaying(false);
-          setStopPending(false);
-          stopPendingRef.current = false;
-        }
-      }
-
+    const tick = () => {
       if (playheadRef.current) {
-        playheadRef.current.style.left = `${position * 100}%`;
+        const progress = Tone.getTransport().progress;
+        playheadRef.current.style.left = `${progress * 100}%`;
       }
 
       rafId = requestAnimationFrame(tick);
@@ -89,33 +109,15 @@ function App() {
     rafId = requestAnimationFrame(tick);
 
     return () => {
-      lastBeatRef.current = 0;
-      startRef.current = null;
-      setCurrentBeat(1);
       cancelAnimationFrame(rafId);
+      lastBeatRef.current = 0;
+      setCurrentBeat(1);
 
       if (playheadRef.current) {
         playheadRef.current.style.left = "0%";
       }
     };
   }, [playing]);
-
-  useEffect(() => {
-    if (!playing || startRef.current === null) {
-      bpmRef.current = bpm;
-
-      return;
-    }
-
-    const now = performance.now();
-    const prevLoop = (60 / bpmRef.current) * NUM_BEATS;
-    const elapsed = (now - startRef.current) / 1000;
-    const position = (elapsed % prevLoop) / prevLoop;
-
-    const newLoop = (60 / bpm) * NUM_BEATS;
-    startRef.current = now - position * newLoop * 1000;
-    bpmRef.current = bpm;
-  }, [bpm, playing]);
 
   return (
     <div className="w-screen h-screen flex flex-row overflow-hidden bg-neutral-950">
