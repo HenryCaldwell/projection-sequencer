@@ -10,7 +10,11 @@ import type { Color } from "./lib/types";
 function App() {
   // References
   const playheadRef = useRef<HTMLDivElement>(null);
+
+  const startRef = useRef<number | null>(null);
+  const bpmRef = useRef(120);
   const lastBeatRef = useRef(1);
+
   const stopPendingRef = useRef(false);
 
   // States
@@ -50,16 +54,15 @@ function App() {
       return;
     }
 
-    let start: number | null = null;
     let rafId: number;
 
     const tick = (now: number) => {
-      if (start === null) {
-        start = now;
+      if (startRef.current === null) {
+        startRef.current = now;
       }
 
-      const elapsed = (now - start) / 1000;
-      const loop = (60 / bpm) * NUM_BEATS;
+      const elapsed = (now - startRef.current) / 1000;
+      const loop = (60 / bpmRef.current) * NUM_BEATS;
       const position = (elapsed % loop) / loop;
       const beat = Math.floor(position * NUM_BEATS) + 1;
 
@@ -86,6 +89,7 @@ function App() {
 
     return () => {
       lastBeatRef.current = 1;
+      startRef.current = null;
       setCurrentBeat(1);
       cancelAnimationFrame(rafId);
 
@@ -93,7 +97,24 @@ function App() {
         playheadRef.current.style.left = "0%";
       }
     };
-  }, [playing, bpm]);
+  }, [playing]);
+
+  useEffect(() => {
+    if (!playing || startRef.current === null) {
+      bpmRef.current = bpm;
+
+      return;
+    }
+
+    const now = performance.now();
+    const prevLoop = (60 / bpmRef.current) * NUM_BEATS;
+    const elapsed = (now - startRef.current) / 1000;
+    const position = (elapsed % prevLoop) / prevLoop;
+
+    const newLoop = (60 / bpm) * NUM_BEATS;
+    startRef.current = now - position * newLoop * 1000;
+    bpmRef.current = bpm;
+  }, [bpm, playing]);
 
   return (
     <div className="w-screen h-screen flex flex-row overflow-hidden bg-neutral-950">
