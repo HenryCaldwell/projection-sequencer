@@ -4,8 +4,8 @@ import Grid from "./components/sequencer/Grid";
 import FaderBank from "./components/sidebar/FaderBank";
 import Transport from "./components/sidebar/Transport";
 import Toolbar from "./components/toolbar/Toolbar";
-import { DEFAULT_COLORS, NUM_BEATS } from "./lib/constants";
-import type { Color } from "./lib/types";
+import { DEFAULT_COLORS, DEMO_MARKERS, NUM_BEATS } from "./lib/constants";
+import type { Color, Marker } from "./lib/types";
 
 function App() {
   // References
@@ -29,6 +29,7 @@ function App() {
   ]);
 
   const [colors, setColors] = useState<Color[]>(DEFAULT_COLORS);
+  const [markers] = useState<Marker[]>(DEMO_MARKERS);
 
   // Handlers
   const handlePlay = () => {
@@ -121,7 +122,12 @@ function App() {
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         <div className="flex-1 relative flex items-center justify-center overflow-hidden">
           <CrtEffect />
-          <Grid playheadRef={playheadRef} />
+          <Grid
+            playheadRef={playheadRef}
+            markers={markers}
+            colors={colors}
+            activeBeat={playing ? currentBeat : null}
+          />
         </div>
 
         <Toolbar colors={colors} onColorsChange={setColors} />

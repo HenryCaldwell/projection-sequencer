@@ -1,11 +1,22 @@
 import type { RefObject } from "react";
 import { NUM_BEATS, NUM_LANES } from "../../lib/constants";
+import type { Color, Marker } from "../../lib/types";
 
 type Props = {
   playheadRef: RefObject<HTMLDivElement | null>;
+  markers: Marker[];
+  colors: Color[];
+  activeBeat: number | null;
 };
 
-function Grid({ playheadRef }: Props) {
+function Grid({ playheadRef, markers, colors, activeBeat }: Props) {
+  const markerByPos = new Map<string, Marker>();
+  for (const marker of markers) {
+    markerByPos.set(`${marker.lane}-${marker.beat}`, marker);
+  }
+
+  const colorById = new Map(colors.map((color) => [color.id, color.hex]));
+
   return (
     <div
       className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
@@ -53,12 +64,28 @@ function Grid({ playheadRef }: Props) {
           gridTemplateRows: `repeat(${NUM_LANES}, 1fr)`,
         }}
       >
-        {Array.from({ length: NUM_LANES * NUM_BEATS }, (_, i) => (
-          <div
-            key={i}
-            className="m-0.5 rounded-sm bg-white/1 border border-white/2"
-          />
-        ))}
+        {Array.from({ length: NUM_LANES * NUM_BEATS }, (_, i) => {
+          const lane = Math.floor(i / NUM_BEATS);
+          const beat = (i % NUM_BEATS) + 1;
+          const marker = markerByPos.get(`${lane}-${beat}`);
+          const color = marker ? colorById.get(marker.colorId) : null;
+          const isActive = beat === activeBeat;
+
+          return (
+            <div
+              key={i}
+              className="m-0.5 rounded-sm border border-white/2 bg-white/1 transition-shadow duration-100"
+              style={
+                color
+                  ? {
+                      background: color,
+                      boxShadow: `0 0 ${isActive ? 12 : 4}px ${color}`,
+                    }
+                  : undefined
+              }
+            />
+          );
+        })}
       </div>
 
       {/* Playhead */}
