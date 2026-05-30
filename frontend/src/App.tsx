@@ -13,7 +13,7 @@ function App() {
 
   const startRef = useRef<number | null>(null);
   const bpmRef = useRef(120);
-  const lastBeatRef = useRef(1);
+  const lastBeatRef = useRef(0);
 
   const stopPendingRef = useRef(false);
 
@@ -89,7 +89,7 @@ function App() {
     rafId = requestAnimationFrame(tick);
 
     return () => {
-      lastBeatRef.current = 1;
+      lastBeatRef.current = 0;
       startRef.current = null;
       setCurrentBeat(1);
       cancelAnimationFrame(rafId);
