@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as Tone from "tone";
 import { NUM_BEATS } from "../lib/constants";
+import type { Color, Marker } from "../lib/types";
 
 type AudioGraph = {
   synths: {
@@ -20,6 +21,8 @@ type AudioGraph = {
 
 type Args = {
   bpm: number;
+  markers: Marker[];
+  colors: Color[];
 };
 
 type Return = {
@@ -31,12 +34,15 @@ type Return = {
   progress: () => number;
 };
 
-export function useSequencer({ bpm }: Args): Return {
+export function useSequencer({ bpm, markers, colors }: Args): Return {
   // References
   const lastBeatRef = useRef(0);
   const stopPendingRef = useRef(false);
 
   const audioRef = useRef<AudioGraph | null>(null);
+
+  const markersRef = useRef<Marker[]>(markers);
+  const colorsRef = useRef<Color[]>(colors);
 
   // States
   const [playing, setPlaying] = useState(false);
@@ -80,8 +86,13 @@ export function useSequencer({ bpm }: Args): Return {
 
     const synths = {
       kick: new Tone.MembraneSynth().connect(gains.kick),
-      snare: new Tone.NoiseSynth().connect(gains.snare),
-      hihat: new Tone.NoiseSynth().connect(gains.hihat),
+      snare: new Tone.NoiseSynth({
+        noise: { type: "pink" },
+        envelope: { attack: 0.001, decay: 0.4, sustain: 0, release: 0.05 },
+      }).connect(gains.snare),
+      hihat: new Tone.NoiseSynth({
+        envelope: { attack: 0.001, decay: 0.03, sustain: 0, release: 0.01 },
+      }).connect(gains.hihat),
       bass: new Tone.FMSynth().connect(gains.bass),
     };
 
@@ -110,11 +121,21 @@ export function useSequencer({ bpm }: Args): Return {
     Tone.getTransport().bpm.value = bpm;
   }, [bpm]);
 
+  // Markers sync
+  useEffect(() => {
+    markersRef.current = markers;
+  }, [markers]);
+
+  // Colors sync
+  useEffect(() => {
+    colorsRef.current = colors;
+  }, [colors]);
+
   // Scheduler
   useEffect(() => {
     const transport = Tone.getTransport();
 
-    const id = transport.scheduleRepeat(() => {
+    const id = transport.scheduleRepeat((time) => {
       const next = (lastBeatRef.current % NUM_BEATS) + 1;
       const wrapped = lastBeatRef.current > 1 && next === 1;
       lastBeatRef.current = next;
@@ -125,6 +146,40 @@ export function useSequencer({ bpm }: Args): Return {
         setPlaying(false);
         setStopPending(false);
         stopPendingRef.current = false;
+      } else {
+        const synths = audioRef.current?.synths;
+
+        if (synths) {
+          for (const marker of markersRef.current) {
+            if (marker.beat !== next) {
+              continue;
+            }
+
+            const color = colorsRef.current.find(
+              (c) => c.id === marker.colorId,
+            );
+            if (!color) {
+              continue;
+            }
+
+            const duration = `0:${color.beats}:0`;
+
+            switch (marker.lane) {
+              case 0:
+                synths.kick.triggerAttackRelease("C2", duration, time);
+                break;
+              case 1:
+                synths.snare.triggerAttackRelease(duration, time);
+                break;
+              case 2:
+                synths.hihat.triggerAttackRelease(duration, time);
+                break;
+              case 3:
+                synths.bass.triggerAttackRelease("C2", duration, time);
+                break;
+            }
+          }
+        }
       }
     }, "4n");
 

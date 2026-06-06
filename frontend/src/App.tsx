@@ -23,9 +23,7 @@ function App() {
 
   // Sequencer
   const { playing, stopPending, currentBeat, play, stop, progress } =
-    useSequencer({
-      bpm,
-    });
+    useSequencer({ bpm, markers, colors });
   const playheadRef = usePlayhead({ playing, progress });
 
   return (

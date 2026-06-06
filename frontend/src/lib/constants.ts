@@ -16,10 +16,12 @@ export const DEFAULT_COLORS: Color[] = [
 
 export const DEMO_MARKERS: Marker[] = [
   // KICK
-  { beat: 1, lane: 0, colorId: "4" },
-  { beat: 5, lane: 0, colorId: "4" },
-  { beat: 9, lane: 0, colorId: "4" },
-  { beat: 13, lane: 0, colorId: "4" },
+  { beat: 1, lane: 0, colorId: "1" },
+  { beat: 4, lane: 0, colorId: "1" },
+  { beat: 7, lane: 0, colorId: "1" },
+  { beat: 11, lane: 0, colorId: "1" },
+  { beat: 13, lane: 0, colorId: "2" },
+  { beat: 16, lane: 0, colorId: "4" },
 
   // SNARE
   { beat: 5, lane: 1, colorId: "2" },
@@ -27,15 +29,27 @@ export const DEMO_MARKERS: Marker[] = [
 
   // HIHAT
   { beat: 1, lane: 2, colorId: "1" },
+  { beat: 2, lane: 2, colorId: "1" },
   { beat: 3, lane: 2, colorId: "1" },
+  { beat: 4, lane: 2, colorId: "1" },
   { beat: 5, lane: 2, colorId: "1" },
+  { beat: 6, lane: 2, colorId: "1" },
   { beat: 7, lane: 2, colorId: "1" },
-  { beat: 9, lane: 2, colorId: "3" },
+  { beat: 8, lane: 2, colorId: "1" },
+  { beat: 9, lane: 2, colorId: "1" },
+  { beat: 10, lane: 2, colorId: "1" },
   { beat: 11, lane: 2, colorId: "1" },
+  { beat: 12, lane: 2, colorId: "1" },
   { beat: 13, lane: 2, colorId: "1" },
+  { beat: 14, lane: 2, colorId: "1" },
   { beat: 15, lane: 2, colorId: "1" },
+  { beat: 16, lane: 2, colorId: "1" },
 
   // BASS
-  { beat: 1, lane: 3, colorId: "6" },
-  { beat: 9, lane: 3, colorId: "5" },
+  { beat: 1, lane: 3, colorId: "2" },
+  { beat: 4, lane: 3, colorId: "1" },
+  { beat: 7, lane: 3, colorId: "1" },
+  { beat: 9, lane: 3, colorId: "2" },
+  { beat: 11, lane: 3, colorId: "1" },
+  { beat: 14, lane: 3, colorId: "1" },
 ];
