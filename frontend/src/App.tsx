@@ -1,18 +1,15 @@
-import { useEffect, useRef, useState } from "react";
-import * as Tone from "tone";
+import { useState } from "react";
 import CrtEffect from "./components/sequencer/CrtEffect";
 import Grid from "./components/sequencer/Grid";
 import FaderBank from "./components/sidebar/FaderBank";
 import Transport from "./components/sidebar/Transport";
 import Toolbar from "./components/toolbar/Toolbar";
+import { usePlayhead } from "./hooks/usePlayhead";
 import { useSequencer } from "./hooks/useSequencer";
 import { DEFAULT_COLORS, DEMO_MARKERS } from "./lib/constants";
 import type { Color, Marker } from "./lib/types";
 
 function App() {
-  // References
-  const playheadRef = useRef<HTMLDivElement>(null);
-
   // States
   const [bpm, setBpm] = useState(120);
 
@@ -25,38 +22,11 @@ function App() {
   const [markers] = useState<Marker[]>(DEMO_MARKERS);
 
   // Sequencer
-  const { playing, stopPending, currentBeat, play, stop } = useSequencer({
-    bpm,
-  });
-
-  // Effects
-  // Playhead
-  useEffect(() => {
-    if (!playing) {
-      if (playheadRef.current) {
-        playheadRef.current.style.left = "0%";
-      }
-
-      return;
-    }
-
-    let rafId: number;
-
-    const tick = () => {
-      if (playheadRef.current) {
-        const progress = Tone.getTransport().progress;
-        playheadRef.current.style.left = `${progress * 100}%`;
-      }
-
-      rafId = requestAnimationFrame(tick);
-    };
-
-    rafId = requestAnimationFrame(tick);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-    };
-  }, [playing]);
+  const { playing, stopPending, currentBeat, play, stop, progress } =
+    useSequencer({
+      bpm,
+    });
+  const playheadRef = usePlayhead({ playing, progress });
 
   return (
     <div className="w-screen h-screen flex flex-row overflow-hidden bg-neutral-950">

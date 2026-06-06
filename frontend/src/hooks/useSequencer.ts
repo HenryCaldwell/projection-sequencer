@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as Tone from "tone";
 import { NUM_BEATS } from "../lib/constants";
 
@@ -28,6 +28,7 @@ type Return = {
   currentBeat: number;
   play: () => void;
   stop: () => void;
+  progress: () => number;
 };
 
 export function useSequencer({ bpm }: Args): Return {
@@ -62,6 +63,8 @@ export function useSequencer({ bpm }: Args): Return {
       stopPendingRef.current = true;
     }
   };
+
+  const progress = useCallback(() => Tone.getTransport().progress, []);
 
   // Effects
   // Audio graph
@@ -144,5 +147,6 @@ export function useSequencer({ bpm }: Args): Return {
     currentBeat,
     play,
     stop,
+    progress,
   };
 }
