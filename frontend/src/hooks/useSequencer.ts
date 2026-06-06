@@ -21,6 +21,8 @@ type AudioGraph = {
 
 type Args = {
   bpm: number;
+  masterVolume: number;
+  laneVolumes: number[];
   markers: Marker[];
   colors: Color[];
 };
@@ -34,7 +36,13 @@ type Return = {
   progress: () => number;
 };
 
-export function useSequencer({ bpm, markers, colors }: Args): Return {
+export function useSequencer({
+  bpm,
+  masterVolume,
+  laneVolumes,
+  markers,
+  colors,
+}: Args): Return {
   // References
   const lastBeatRef = useRef(0);
   const stopPendingRef = useRef(false);
@@ -130,6 +138,23 @@ export function useSequencer({ bpm, markers, colors }: Args): Return {
   useEffect(() => {
     colorsRef.current = colors;
   }, [colors]);
+
+  // Master volume sync
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.master.gain.value = masterVolume;
+    }
+  }, [masterVolume]);
+
+  // Lane volumes sync
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.gains.kick.gain.value = laneVolumes[0];
+      audioRef.current.gains.snare.gain.value = laneVolumes[1];
+      audioRef.current.gains.hihat.gain.value = laneVolumes[2];
+      audioRef.current.gains.bass.gain.value = laneVolumes[3];
+    }
+  }, [laneVolumes]);
 
   // Scheduler
   useEffect(() => {
