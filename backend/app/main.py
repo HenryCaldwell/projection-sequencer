@@ -1,9 +1,27 @@
+import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import router
+from app.services.camera_services import CameraService
 
-app = FastAPI()
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
+)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.camera = CameraService()
+    app.state.camera.start()
+    yield
+    app.state.camera.stop()
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
