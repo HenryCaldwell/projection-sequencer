@@ -24,7 +24,6 @@ class CameraService:
         if self._capture is not None:
             self._capture.release()
             self._capture = None
-
             logger.info("Released camera")
 
     def read_frame(self) -> np.ndarray | None:

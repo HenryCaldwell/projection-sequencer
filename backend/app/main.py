@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import router
 from app.services.camera_services import CameraService
+from app.services.detection_services import DetectionService
 
 logging.basicConfig(
     level=logging.INFO,
@@ -17,7 +18,13 @@ logging.basicConfig(
 async def lifespan(app: FastAPI):
     app.state.camera = CameraService()
     app.state.camera.start()
+
+    app.state.detection = DetectionService(app.state.camera)
+    app.state.detection.start()
+
     yield
+
+    app.state.detection.stop()
     app.state.camera.stop()
 
 
