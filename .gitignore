@@ -1,7 +1,4 @@
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,react
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,react
-
-### react ###
+### React ###
 .DS_*
 *.log
 logs
@@ -17,7 +14,13 @@ psd
 thumb
 sketch
 
-### VisualStudioCode ###
+### Python ###
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+### Visual Studio Code ###
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -25,15 +28,9 @@ sketch
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 
-# Local History for Visual Studio Code
 .history/
 
-# Built Visual Studio Code Extensions
 *.vsix
 
-### VisualStudioCode Patch ###
-# Ignore all local history of files
 .history
 .ionide
-
-# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,react
